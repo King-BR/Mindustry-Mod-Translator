@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "lint": "npx run prettier -w .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "npx prettier --check .",
+    "contributors:add": "npx all-contributors add",
+    "contributors:generate": "npx all-contributors generate",
+    "lint": "npx prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "fs": "0.0.1-security",
-    "google-translate-free": "^2.4.5",
-    "hjson": "^3.2.2",
-    "properties": "^1.2.1"
+    "google-translate-free": "github:King-BR/google-translate-api#patch-1",
+    "hjson": "^3.2.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
