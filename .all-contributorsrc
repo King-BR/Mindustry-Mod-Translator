@@ -1,0 +1,27 @@
+{
+  "projectName": "Discord.js-Bot-Template",
+  "projectOwner": "King-BR",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "King-BR",
+      "name": "Fernando",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51011050?v=4",
+      "profile": "https://github.com/King-BR",
+      "contributions": [
+        "code",
+        "ideas",
+        "maintenance",
+        "translation"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}

@@ -1,0 +1,6 @@
+.github/
+.vscode/
+node_modules/
+mods/
+package-lock.json
+package.json
