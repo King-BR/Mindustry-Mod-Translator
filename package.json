@@ -11,7 +11,7 @@
   },
   "keywords": ["mindustry", "translation"],
   "author": "King-BR",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "fs": "0.0.1-security",
     "google-translate-free": "github:King-BR/google-translate-api#patch-1",
