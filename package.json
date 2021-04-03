@@ -9,8 +9,8 @@
     "contributors:generate": "npx all-contributors generate",
     "lint": "npx prettier --write ."
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["mindustry", "translation"],
+  "author": "King-BR",
   "license": "ISC",
   "dependencies": {
     "fs": "0.0.1-security",
