@@ -44,7 +44,7 @@ config.to.forEach(async (lang, l) => {
   };
 
   src.forEach((modFolder, i) => {
-    if(modFolder == ".git") return;
+    if (modFolder == ".git") return;
     let contentSrc = fs.readdirSync(`mods/${modFolder}/content`);
     let modMetadata =
       parseContentFile(`mods/${modFolder}/mod.json`) ||
@@ -85,8 +85,13 @@ config.to.forEach(async (lang, l) => {
     });
 
     let bundleFile = `mods/${modFolder}/bundles/bundle.properties`;
-    if(lang != "en") {
-      bundleFile = `mods/${modFolder}/bundles/bundle_${lang.split('-')[0] + (lang.split('-')[1].toLowerCase() ? "_" + lang.split('-')[1].toUpperCase() : "")}.properties`;
+    if (lang != "en") {
+      bundleFile = `mods/${modFolder}/bundles/bundle_${
+        lang.split("-")[0] +
+        (lang.split("-")[1].toLowerCase()
+          ? "_" + lang.split("-")[1].toUpperCase()
+          : "")
+      }.properties`;
     }
 
     fs.writeFileSync(bundleFile, bundleStr, { encoding: "utf8" });
