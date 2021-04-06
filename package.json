@@ -9,13 +9,15 @@
     "contributors:generate": "npx all-contributors generate",
     "lint": "npx prettier --write ."
   },
-  "keywords": ["mindustry", "translation"],
+  "keywords": [
+    "mindustry",
+    "translation"
+  ],
   "author": "King-BR",
   "license": "MIT",
   "dependencies": {
-    "fs": "0.0.1-security",
-    "google-translate-free": "github:King-BR/google-translate-api#patch-1",
-    "hjson": "^3.2.2"
+    "@vitalets/google-translate-api": "^5.1.0",
+    "fs": "0.0.1-security"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",

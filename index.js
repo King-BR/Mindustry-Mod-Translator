@@ -1,21 +1,7 @@
 const fs = require("fs");
-const Hjson = require("hjson");
-const translate = require("google-translate-free");
-const config = require("./config.json");
-
-/**
- *
- * @param {fs.PathLike} path
- * @returns {Object}
- */
-function parseContentFile(path = null) {
-  if (typeof path != "string" || !fs.existsSync(path)) return false;
-
-  let parse = JSON.parse;
-  if (path.endsWith(".hjson")) parse = Hjson.parse;
-
-  return parse(fs.readFileSync(path, { encoding: "utf8" }));
-}
+const parseContentFile = require("./parse.js");
+const translate = require('@vitalets/google-translate-api');
+translate.languages['pt-br'] = "Portuguese (Brazillian)";
 
 /**
  *
@@ -37,63 +23,36 @@ const CONTENT_TYPE = {
 
 var src = fs.readdirSync("mods");
 
-config.to.forEach(async (lang, l) => {
-  let options = {
-    from: config.from,
-    to: lang,
-  };
+src.forEach((modFolder, i) => {
+  if (modFolder == ".git") return;
+  let contentSrc = fs.readdirSync(`mods/${modFolder}/content`);
+  modName = modFolder.toLowerCase();
 
-  src.forEach((modFolder, i) => {
-    if (modFolder == ".git") return;
-    let contentSrc = fs.readdirSync(`mods/${modFolder}/content`);
-    let modMetadata =
-      parseContentFile(`mods/${modFolder}/mod.json`) ||
-      parseContentFile(`mods/${modFolder}/mod.hjson`);
+  if (!fs.existsSync(`mods/${modFolder}/bundles`))
+    fs.mkdirSync(`mods/${modFolder}/bundles`);
 
-    if (!fs.existsSync(`mods/${modFolder}/bundles`))
-      fs.mkdirSync(`mods/${modFolder}/bundles`);
+  let bundleStr = "";
 
-    let bundleStr = "";
+  contentSrc.forEach((contentFolder, j) => {
+    let contentFiles = fs.readdirSync(
+      `mods/${modFolder}/content/${contentFolder}`
+    );
 
-    contentSrc.forEach((contentFolder, j) => {
-      let contentFiles = fs.readdirSync(
-        `mods/${modFolder}/content/${contentFolder}`
+    contentFiles.forEach(async (contentFile, k) => {
+      let parsedContentFile = parseContentFile(
+        `mods/${modFolder}/content/${contentFolder}/${contentFile}`
       );
+      let contentFileName = contentFile.split(".")[0];
 
-      contentFiles.forEach(async (contentFile, k) => {
-        let parsedContentFile = parseContentFile(
-          `mods/${modFolder}/content/${contentFolder}/${contentFile}`
-        );
-        let contentFileName = contentFile.split(".")[0];
+      await sleep(j + k/2);
 
-        await sleep(i / 2 + j / 2 + k / 2 + l / 2);
-
-        bundleStr += `${CONTENT_TYPE[contentFolder]}.${
-          modMetadata.name
-        }-${contentFileName}.name = ${
-          parsedContentFile.name
-            ? translate(parsedContentFile.name, options).text
-            : "Oh No"
-        }\n${CONTENT_TYPE[contentFolder]}.${
-          modMetadata.name
-        }-${contentFileName}.description = ${
-          parsedContentFile.description
-            ? translate(parsedContentFile.description, options).text
-            : "Oh No"
-        }\n`;
-      });
+      console.log("traduzindo " + contentFile)
+      // prettier-ignore
+      bundleStr += `${CONTENT_TYPE[contentFolder]}${modName}-${contentFileName}.name = ${parsedContentFile.name? await translate(parsedContentFile.name, {from: "en", to: "pt-br" }).text : "Oh No"}\n${CONTENT_TYPE[contentFolder]}${modName}-${contentFileName}.description = ${parsedContentFile.description? await translate(parsedContentFile.description, {from: "en", to: "pt-br" }).text : "Oh No"}\n`;
     });
-
-    let bundleFile = `mods/${modFolder}/bundles/bundle.properties`;
-    if (lang != "en") {
-      bundleFile = `mods/${modFolder}/bundles/bundle_${
-        lang.split("-")[0] +
-        (lang.split("-")[1].toLowerCase()
-          ? "_" + lang.split("-")[1].toUpperCase()
-          : "")
-      }.properties`;
-    }
-
-    fs.writeFileSync(bundleFile, bundleStr, { encoding: "utf8" });
   });
+
+  let bundleFile = `mods/${modFolder}/bundles/bundle_pt_BR.properties`;
+
+  fs.writeFileSync(bundleFile, bundleStr, { encoding: "utf8" });
 });
