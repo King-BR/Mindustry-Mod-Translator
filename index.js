@@ -1,7 +1,5 @@
 const fs = require("fs");
 const parseContentFile = require("./parse.js");
-const translate = require('@vitalets/google-translate-api');
-translate.languages['pt-br'] = "Portuguese (Brazillian)";
 
 /**
  *
@@ -21,38 +19,43 @@ const CONTENT_TYPE = {
   zones: "zone.",
 };
 
-var src = fs.readdirSync("mods");
+process.on("unhandledRejection", function (err) { console.log(err) })
 
-src.forEach((modFolder, i) => {
-  if (modFolder == ".git") return;
-  let contentSrc = fs.readdirSync(`mods/${modFolder}/content`);
-  modName = modFolder.toLowerCase();
+async function makeBundle () {
+  let contentSrc = fs.readdirSync(`mods/content`);
+  modName = parseContentFile("mods/mod").name;
 
-  if (!fs.existsSync(`mods/${modFolder}/bundles`))
-    fs.mkdirSync(`mods/${modFolder}/bundles`);
+  if (!fs.existsSync(`mods/bundles`))
+    fs.mkdirSync(`mods/bundles`);
 
-  let bundleStr = "";
 
-  contentSrc.forEach((contentFolder, j) => {
+  var contentArr = contentSrc.map(async (contentFolder, j) => {
     let contentFiles = fs.readdirSync(
-      `mods/${modFolder}/content/${contentFolder}`
+      `mods/content/${contentFolder}`
     );
 
-    contentFiles.forEach(async (contentFile, k) => {
-      let parsedContentFile = parseContentFile(
-        `mods/${modFolder}/content/${contentFolder}/${contentFile}`
+    var contentArr2 = contentFiles.map(async (contentFile, k) => {
+      let parsedContentFile = await parseContentFile(
+        `mods/content/${contentFolder}/${contentFile}`
       );
       let contentFileName = contentFile.split(".")[0];
 
-      await sleep(j + k/2);
-
-      console.log("traduzindo " + contentFile)
+      //console.log("traduzindo " + contentFile);
       // prettier-ignore
-      bundleStr += `${CONTENT_TYPE[contentFolder]}${modName}-${contentFileName}.name = ${parsedContentFile.name? await translate(parsedContentFile.name, {from: "en", to: "pt-br" }).text : "Oh No"}\n${CONTENT_TYPE[contentFolder]}${modName}-${contentFileName}.description = ${parsedContentFile.description? await translate(parsedContentFile.description, {from: "en", to: "pt-br" }).text : "Oh No"}\n`;
+      let str = `${CONTENT_TYPE[contentFolder]}${modName}-${contentFileName}.name = ${parsedContentFile.name? parsedContentFile.name : "Oh No"}\n${CONTENT_TYPE[contentFolder]}${modName}-${contentFileName}.description = ${parsedContentFile.description? parsedContentFile.description : "Oh No"}\n`;
+      //console.log(str);
+      await sleep((j + k)/2);
+      return str;
     });
+
+    return contentArr2;
   });
 
-  let bundleFile = `mods/${modFolder}/bundles/bundle_pt_BR.properties`;
+  let bundleFile = `mods/bundles/bundle_pt_BR.properties`;
 
-  fs.writeFileSync(bundleFile, bundleStr, { encoding: "utf8" });
-});
+  await sleep(20);
+  console.log(contentArr.map(async c => { return await c }));
+  fs.writeFileSync(bundleFile, contentArr, { encoding: "utf8" });
+}
+
+makeBundle();

@@ -1,14 +1,14 @@
 const fs = require("fs");
 
-var nameTest = /"?name"?\s*:[^\n]*/i
-var descTest = /"?description"?\s*:[^\n]*/i
+var nameTest = /(?<!"?weapon"?:\s*{\s*)"?name"?:\s*"?([^\n]+)"?\b/i
+var descTest = /(?<!"?weapon"?:\s*{\s*)"?description"?:\s*"?([\w\S 	.]+)"?\b/i
 
 /**
  *
  * @param {fs.PathLike} path
  * @returns {Object}
  */
-module.exports = function (path = null) {
+module.exports = async function (path = null) {
   if (typeof path != "string") return false;
 
   if(!path.endsWith(".json") && !path.endsWith(".hjson")) {
